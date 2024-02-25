@@ -34,6 +34,23 @@
     ></script>
   </head>
 
+  <style>
+    #device_card_container .card .card-body i {
+      font-size: x-large;
+    }
+
+    #device_card_container {
+      .card {
+        min-width: 250px;
+
+        .card-header {
+          font-size: large;
+          font-weight: 600;
+        }
+      }
+    }
+  </style>
+
   <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -376,7 +393,8 @@
 
           <!-- Begin Page Content -->
           <div class="container-fluid">
-            <h1>Devices area</h1>
+            <h1>Devices Monitor</h1>
+            <div class="d-flex flex-wrap" id="device_card_container"></div>
           </div>
           <!-- /.container-fluid -->
         </div>
@@ -402,6 +420,8 @@
     </a>
 
     <script type="module" src="/public/user.js"></script>
+    <script type="module" src="/public/device/device-list.js"></script>
+    <script type="module" src="/public/dashboad/show_device.js"></script>
 
     <script type="module">
       await userCheck();
@@ -409,8 +429,43 @@
       $("#logout").click(function (e) {
         logout();
       });
-    </script>
 
+      let device_id_list = [];
+      let deviceData = [];
+      // get device list //
+      await getDeviceList()
+        .then((devices) => {
+          deviceData = devices;
+          devices.forEach((deviceId) => {
+            device_id_list.push(deviceId.device_id);
+          });
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      // get device list //
+      // console.log(deviceData);
+
+      let htmlList = "";
+      deviceData.forEach((data) => {
+        htmlList += `<div class="card my-3 mx-2 shadow-sm" id="${data.device_id}">
+  <div class="card-header">${data.device_name}</div>
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between">
+      <i class="fas fa-microchip mx-2"></i>
+      <div class="value_container">
+        <span id="value_${data.device_id}"></span>
+        <span>ppm</span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+      });
+      $("#device_card_container").html(htmlList);
+
+      await showValue(device_id_list);
+    </script>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
