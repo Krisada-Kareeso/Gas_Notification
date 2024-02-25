@@ -10,7 +10,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <link rel="icon" type="image/x-icon" href="/img/favicon/gas.png">
+    <link rel="icon" type="image/x-icon" href="/img/favicon/gas.png" />
     <title>Gas Notification || Device</title>
 
     <!-- Custom fonts for this template-->
@@ -24,9 +24,27 @@
       rel="stylesheet"
     />
 
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+      integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+      crossorigin="anonymous"
+    ></script>
+
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet" />
+
+    <!-- Custom styles for data table -->
+    <link
+      href="vendor/datatables/dataTables.bootstrap4.min.css"
+      rel="stylesheet"
+    />
   </head>
+
+  <style>
+    .add-device-label {
+      width: 120px;
+    }
+  </style>
 
   <body id="page-top">
     <!-- Page Wrapper -->
@@ -372,8 +390,99 @@
           <div class="container-fluid">
             <h1>Devices Management</h1>
 
+            <!-- Add device -->
+            <div class="d-flex justify-content-end my-3">
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="add_device"
+                data-toggle="modal"
+                data-target="#add_device_modal"
+              >
+                Add Device
+              </button>
+            </div>
+
+            <!-- Add device Modal -->
+            <div class="modal" id="add_device_modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Add Device</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                      &times;
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text add-device-label"
+                          >Device ID</span
+                        >
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        aria-label="device-id"
+                        aria-describedby="device-id"
+                        id="device-id"
+                      />
+                    </div>
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text add-device-label"
+                          >Device Name</span
+                        >
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        aria-label="device-name"
+                        aria-describedby="device-name"
+                        id="device-name"
+                      />
+                    </div>
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text add-device-label"
+                          >Device Owner</span
+                        >
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        aria-label="device-owner"
+                        aria-describedby="device-owner"
+                        id="device-owner"
+                      />
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      id="submit-add-device"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <!-- Other modal footer buttons -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- DataTales Example -->
             <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Device List</h6>
+              </div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table
@@ -385,9 +494,9 @@
                     <thead>
                       <tr>
                         <th>No.</th>
-                        <th>Name</th>
-                        <th>ID</th>
-                        <th>Owner</th>
+                        <th>Device ID</th>
+                        <th>Device Name</th>
+                        <th>Device Owner</th>
                       </tr>
                     </thead>
                     <tbody></tbody>
@@ -420,6 +529,7 @@
     </a>
 
     <script type="module" src="user.js"></script>
+    <script type="module" src="/device/device-list.js"></script>
 
     <script type="module">
       await userCheck();
@@ -427,7 +537,96 @@
       $("#logout").click(function (e) {
         logout();
       });
+
+      let device_list = [];
+      // add device function //
+      $("#submit-add-device").click(async function (e) {
+        e.preventDefault();
+
+        const device_id = $("#device-id").val();
+        const device_name = $("#device-name").val();
+        const device_owner = $("#device-owner").val();
+
+        if (device_id && device_name && device_owner) {
+          Swal.showLoading();
+          const dataToAdd = {
+            device_id: device_id,
+            device_name: device_name,
+            device_owner: device_owner,
+            add_time: Math.floor(new Date().getTime() / 1000),
+          };
+          const isAdded = await addDevice(dataToAdd);
+          if (isAdded) {
+            Swal.close();
+            console.log("added ", device_name);
+            device_list.push(dataToAdd);
+            $("#add_device_modal").modal("hide");
+            tableDraw(device_list);
+          } else {
+            Swal.close();
+            Swal.fire({
+              icon: "error",
+              title: "Unable to add device",
+              text: device_name,
+            });
+            console.error("Unable to add device");
+          }
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Fill data to all field",
+          });
+          console.error("some field is empty");
+        }
+      });
+      // add device function //
+
+      // get device list //
+
+      getDeviceList()
+        .then((devices) => {
+          device_list = devices;
+          tableDraw(devices);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      // get device list //
+
+      function tableDraw(devices) {
+        devices.sort((a, b) => {
+          // Sort by add_time in ascending order
+          return a.add_time - b.add_time;
+        });
+
+        console.log("Sorted devices:", devices);
+
+        // Initialize DataTable if not already initialized
+        if (!$.fn.DataTable.isDataTable("#device_table")) {
+          $("#device_table").DataTable();
+        } else {
+          // Clear existing rows from the DataTable
+          $("#device_table").DataTable().clear().draw();
+        }
+
+        // Add data to the table
+        const table = $("#device_table").DataTable();
+        devices.forEach(function (device, index) {
+          table.row
+            .add([
+              index + 1,
+              device.device_name,
+              device.device_id,
+              device.device_owner,
+            ])
+            .draw(true);
+        });
+      }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="module" src="/device/add-device.js"></script>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -438,11 +637,8 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+    <!-- Page level plugins data table -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
   </body>
 </html>

@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "Gas_Notification",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

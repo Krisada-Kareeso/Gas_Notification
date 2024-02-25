@@ -33,6 +33,37 @@
     <link href="css/sb-admin-2.min.css" rel="stylesheet" />
   </head>
 
+  <style>
+    /* HTML: <div class="loader"></div> */
+    .loader {
+      width: 50px;
+      aspect-ratio: 1;
+      display: grid;
+      border: 4px solid #0000;
+      border-radius: 50%;
+      border-right-color: #2e59d9;
+      animation: l15 1s infinite linear;
+    }
+    .loader::before,
+    .loader::after {
+      content: "";
+      grid-area: 1/1;
+      margin: 2px;
+      border: inherit;
+      border-radius: 50%;
+      animation: l15 2s infinite;
+    }
+    .loader::after {
+      margin: 8px;
+      animation-duration: 3s;
+    }
+    @keyframes l15 {
+      100% {
+        transform: rotate(1turn);
+      }
+    }
+  </style>
+
   <body class="bg-gradient-primary">
     <div class="container">
       <!-- Outer Row -->
@@ -42,11 +73,17 @@
             <div class="card-body p-0">
               <!-- Nested Row within Card Body -->
               <div class="row">
-                <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                <div class="d-flex col-6">
+                  <img
+                    src="/img/gas_login.jpg"
+                    alt="login"
+                    style="width: 100%"
+                  />
+                </div>
                 <div class="col-lg-6">
                   <div class="p-5">
                     <div class="text-center">
-                      <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                      <h1 class="h4 text-gray-900 mb-4">Welcome</h1>
                     </div>
                     <form class="user" id="user_submit">
                       <div class="form-group">
@@ -68,12 +105,16 @@
                           value="0881447731"
                         />
                       </div>
-                      <div class="d-flex justify-content-between">
+                      <div class="d-flex justify-content-between" style="height: 50px;">
                         <button class="btn btn-primary btn-user" type="submit">
                           Login
                         </button>
+                        <div class="loader d-none"></div>
                         <a href="register.html">
-                          <button type="button" class="btn btn-outline-primary btn-user">
+                          <button
+                            type="button"
+                            class="btn btn-outline-primary btn-user"
+                          >
                             Register
                           </button>
                         </a>
@@ -97,8 +138,8 @@
           username: $("#inputEmail").val(),
           password: $("#inputPassword").val(),
         };
-        console.log(formData);
         if (formData.username && formData.password) {
+          $(".loader").removeClass("d-none");
           signIn(formData.username, formData.password)
             .then((userData) => {
               console.log("Signed in as:", userData.email);

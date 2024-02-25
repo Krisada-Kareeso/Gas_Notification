@@ -7,9 +7,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDkEHEjNfZoEEKQVuI8LYgvAuECusIEd8s",
   authDomain: "gas-detection-306f1.firebaseapp.com",
@@ -45,7 +43,7 @@ window.signIn = signIn;
 function userCheck() {
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      console.log(user);
+      console.log(user.email);
     } else {
       console.log("User is signed out");
       window.location.href = "login.html";
