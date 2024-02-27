@@ -43,7 +43,8 @@ window.signIn = signIn;
 function userCheck() {
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      console.log(user.email);
+      console.log(user);
+      $("#user_name").html(user.displayName);
     } else {
       console.log("User is signed out");
       window.location.href = "login.html";
@@ -73,8 +74,9 @@ function register(email, password, name) {
       updateProfile(user, {
         displayName: name,
       })
-        .then(() => {
-          console.log("Name added to user profile:", user.displayName);
+        .then(async () => {
+          await Swal.fire("Register Success", "", "success");
+          window.location.href = "login.html";
         })
         .catch((error) => {
           console.error("Error updating profile:", error.message);
