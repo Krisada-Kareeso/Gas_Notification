@@ -11,7 +11,7 @@
     <meta name="author" content="" />
 
     <link rel="icon" type="image/x-icon" href="/img/favicon/gas.png" />
-    <title>Gas Notification || Device</title>
+    <title>Gas Detector || Device</title>
 
     <!-- Custom fonts for this template-->
     <link
@@ -59,7 +59,7 @@
           class="sidebar-brand d-flex align-items-center justify-content-center"
           href="index.html"
         >
-          <div class="sidebar-brand-text mx-3">Gas Notification</div>
+          <div class="sidebar-brand-text mx-3">Gas Detector</div>
         </a>
 
         <!-- Divider -->
@@ -348,9 +348,10 @@
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <span class="mr-2 d-none d-lg-inline text-gray-600 small"
-                    id="user_name"></span
-                  >
+                  <span
+                    class="mr-2 d-none d-lg-inline text-gray-600 small"
+                    id="user_name"
+                  ></span>
                   <img
                     class="img-profile rounded-circle"
                     src="img/undraw_profile.svg"
@@ -497,6 +498,7 @@
                         <th>Device ID</th>
                         <th>Device Name</th>
                         <th>Device Owner</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody></tbody>
@@ -528,8 +530,15 @@
       <i class="fas fa-angle-up"></i>
     </a>
 
+    <!-- local -->
+    <!-- <script type="module" src="/public/user.js"></script>
+    <script type="module" src="/public/device/device-list.js"></script>
+    <script type="module" src="/public/device/add-device.js"></script> -->
+
+    <!-- public -->
     <script type="module" src="/user.js"></script>
     <script type="module" src="/device/device-list.js"></script>
+    <script type="module" src="/device/add-device.js"></script>
 
     <script type="module">
       await userCheck();
@@ -617,15 +626,17 @@
               device.device_id,
               device.device_name,
               device.device_owner,
+              `<a class="fas fa-trash text-danger" id="${device.device_id}" onclick="deleteDevice(this.id)" style="font-size:larger;"></a>`,
             ])
             .draw(true);
         });
       }
     </script>
 
+    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script type="module" src="/device/add-device.js"></script>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

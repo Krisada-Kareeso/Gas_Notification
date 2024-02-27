@@ -21,7 +21,6 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 function showValue(deviceIds) {
-  let data_list = [];
   // Iterate over each device ID
   deviceIds.forEach((deviceId) => {
     const usersRef = ref(database, deviceId);
@@ -29,37 +28,15 @@ function showValue(deviceIds) {
     function handleDataChange(snapshot) {
       if (snapshot.exists()) {
         const deviceData = snapshot.val();
-        const timestampKeys = Object.keys(deviceData.log.data.timestamp);
-        const ppmKeys = Object.keys(deviceData.log.data.value);
-
-        let maxTimestamp = -Infinity; // Initialize maxTimestamp to negative infinity
-        let maxValue = null; // Initialize maxValue to null
-
-        timestampKeys.forEach((timestampKey, index) => {
-          const ppmKey = ppmKeys[index];
-          const timestampValue = deviceData.log.data.timestamp[timestampKey];
-          const ppmValue = deviceData.log.data.value[ppmKey];
-          data_list.push([timestampValue, ppmValue]);
-
-          // Update maxTimestamp and maxValue if the current timestamp is greater
-          if (timestampValue > maxTimestamp) {
-            maxTimestamp = timestampValue;
-            maxValue = ppmValue;
-          }
-        });
-        $(`#value_${deviceId}`).html(maxValue);
-
-        console.log("Maximum Timestamp:", maxTimestamp);
-        console.log("Corresponding Value:", maxValue);
-        $(`#value_${deviceId}`).html(deviceData.ppm);
+        $(`#value_${deviceId}`).html(
+          typeof deviceData.value !== "number" ? "NaN" : deviceData.value
+        );
+        $(`#update_${deviceId}`).html(`Last update <span class="text-gray-800">${convertTime(deviceData.last_update)}</span>`);
       } else {
         $(`#value_${deviceId}`).html("NaN");
         console.log(`No data found for device ${deviceId}`);
-        // Handle the case where data for the device ID is not found
       }
     }
-
-    // Set up an event listener to monitor data changes for each device ID
     onValue(usersRef, handleDataChange);
   });
 }
