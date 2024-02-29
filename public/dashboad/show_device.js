@@ -31,7 +31,7 @@ function showValue(deviceIds) {
         $(`#value_${deviceId}`).html(
           typeof deviceData.value !== "number" ? "NaN" : deviceData.value
         );
-        $(`#update_${deviceId}`).html(`Last update <span class="text-gray-800">${convertTime(deviceData.last_update)}</span>`);
+        $(`#update_${deviceId}`).html(`<span class="font-weight-bold">Last update: </span>${convertTime(deviceData.last_update)}`);
       } else {
         $(`#value_${deviceId}`).html("NaN");
         console.log(`No data found for device ${deviceId}`);

@@ -8,11 +8,11 @@ function convertTime(epochTimestamp) {
   const seconds = ("0" + date.getSeconds()).slice(-2);
 
   const humanReadableDate =
-    year +
+    day +
     "/" +
     month +
     "/" +
-    day +
+    year +
     " " +
     hours +
     ":" +
