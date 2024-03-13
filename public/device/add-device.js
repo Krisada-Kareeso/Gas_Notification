@@ -7,6 +7,7 @@ import {
   getDocs,
   query,
   where,
+  updateDoc,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -66,3 +67,41 @@ async function deleteDevice(deviceId) {
   });
 }
 window.deleteDevice = deleteDevice;
+
+async function editDevice(id, name, owner) {
+  $("#submit-edit-device").removeClass("d-none");
+  $("#submit-add-device").addClass("d-none");
+  $("#device-id").val(id);
+  $("#device-id").attr("disabled", true);
+  $("#device-name").val(name);
+  $("#device-owner").val(owner);
+  $("#add-title").html("Edit Device");
+}
+window.editDevice = editDevice;
+
+$("#submit-edit-device").click(async function (e) {
+  e.preventDefault();
+  const id = $("#device-id").val();
+  const name = $("#device-name").val();
+  const owner = $("#device-owner").val();
+
+  try {
+    Swal.showLoading();
+    const querySnapshot = await getDocs(
+      query(collection(db, "device"), where("device_id", "==", id))
+    );
+    querySnapshot.forEach(async (doc) => {
+      const docRef = doc.ref;
+
+      await updateDoc(docRef, {
+        device_name: name,
+        device_owner: owner,
+      });
+      await Swal.fire("Update success", "", "success");
+      window.location.reload();
+    });
+  } catch (e) {
+    Swal.fire("Update failed", "", "error");
+    console.error("Error deleting document: ", e);
+  }
+});
